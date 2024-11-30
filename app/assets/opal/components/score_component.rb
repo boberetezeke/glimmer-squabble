@@ -1,16 +1,17 @@
-class ActionsComponent
+class ScoreComponent
   include Glimmer::Web::Component
 
   option :player
 
   markup do
-    div(style: { display: :flex }) do
+    div do
       div do
-        button 'pass'
+        player.name
       end
       div do
-        button 'submit'
+        player.score.to_s
       end
     end
   end
 end
+
