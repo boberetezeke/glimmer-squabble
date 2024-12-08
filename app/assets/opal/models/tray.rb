@@ -1,11 +1,14 @@
 class Tray
-  attr_reader :size
+  attr_reader :size, :squares
 
   def initialize(size, letters)
     @size = size
     @selected_index = nil
     @squares = Array.new(size) do |row|
-      nil
+      Square.new
+    end
+    @squares.each_with_index do |square, index|
+      square.letter = letters[index]
     end
   end
 

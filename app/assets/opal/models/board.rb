@@ -9,12 +9,4 @@ class Board
       end
     end
   end
-
-  def select_square(row, col)
-    @squares[row][col].select
-  end
-
-  def selected_square
-
-  end
 end

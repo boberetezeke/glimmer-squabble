@@ -55,11 +55,22 @@ describe GamePresenter do
   end
 
   describe 'tray_square_selected' do
-    it 'does' do
-      board.select_square(0, 0)
-      subject.tray_square_selected(0)
-      expect(board.selected_square).to be_nil
-      expect(game.selected_square).to eq([:tray, 0])
+    before do
+      board.squares[1][1].letter = 'B'
+      board_presenter.select_square(1, 1)
+      subject.tray_square_selected(4)
+    end
+
+    it 'unselects the square on the board' do
+      expect(board_presenter.selected_square).to be_nil
+    end
+
+    it 'unselects the square on the tray' do
+      expect(tray_presenter.selected_square).to be_nil
+    end
+
+    it 'moves a letter back to the tray' do
+      expect(tray.squares[4].letter).to eq('B')
     end
   end
 end
