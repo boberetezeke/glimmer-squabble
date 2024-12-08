@@ -1,0 +1,1 @@
+../assets/opal/models/tray.rb

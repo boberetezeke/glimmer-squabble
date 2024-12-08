@@ -1,0 +1,1 @@
+../assets/opal/presenters/board_presenter.rb

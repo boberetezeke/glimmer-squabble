@@ -1,0 +1,1 @@
+../assets/opal/presenters/square_presenter.rb

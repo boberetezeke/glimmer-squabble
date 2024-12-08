@@ -1,4 +1,4 @@
-class ShelfComponent
+class TrayComponent
   include Glimmer::Web::Component
 
   option :player

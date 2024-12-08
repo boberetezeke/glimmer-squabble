@@ -1,10 +1,12 @@
 class Square
-  attr_accessor :value
-  attr_reader :row, :col
+  attr_accessor :letter
 
-  def initialize(row, col, value: nil)
-    @row = row
-    @col = col
-    @value = (65 + (row * 3) + col).chr
+  def initialize(letter: nil)
+    @letter = letter
+    @selected = false
+  end
+
+  def select
+    @selected = true
   end
 end

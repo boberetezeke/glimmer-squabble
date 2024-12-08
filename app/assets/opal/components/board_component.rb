@@ -1,9 +1,7 @@
-require 'components/square_component'
-require 'models/square'
 class BoardComponent
   include Glimmer::Web::Component
 
-  option :board
+  option :board_presenter
 
   markup do
     table do
@@ -11,7 +9,7 @@ class BoardComponent
         tr do
           board.size.times do |col_index|
             td do
-              square_component(square: board.squares[row_index][col_index])
+              square_component(square_presenter: board_presenter.square_presenters[row_index][col_index])
             end
           end
         end
