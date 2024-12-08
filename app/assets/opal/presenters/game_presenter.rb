@@ -1,0 +1,2 @@
+class GamePresenter
+end
