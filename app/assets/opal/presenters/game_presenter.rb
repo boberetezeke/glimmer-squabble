@@ -1,1 +1,0 @@
-../assets/opal/presenters/game_presenter.rb
