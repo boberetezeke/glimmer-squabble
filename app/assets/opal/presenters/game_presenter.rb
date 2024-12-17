@@ -16,13 +16,15 @@ class GamePresenter
   end
 
   def board_square_selected(row, col)
-    return unless tray_presenter.selected_square
+    if tray_presenter.selected_square
+      letter = tray_presenter.selected_square.letter
+      return unless letter
 
-    letter = tray_presenter.selected_square.letter
-    return unless letter
-
-    board_presenter.place_letter(row, col, letter)
-    tray_presenter.select_square(nil)
+      board_presenter.place_letter(row, col, letter)
+      tray_presenter.select_square(nil)
+    else
+      board_presenter.select_square(row, col)
+    end
   end
 
   def tray_square_selected(index)
