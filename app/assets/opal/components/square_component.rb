@@ -6,7 +6,7 @@ class SquareComponent
   markup do
     div do
       onclick do
-        puts 'clicked'
+        square_presenter.selected
       end
       inner_text <= [square_presenter, :letter]
     end

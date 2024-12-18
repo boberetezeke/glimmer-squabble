@@ -13,7 +13,7 @@ class BoardPresenter
     @square_presenters = Array.new(board.size) do |row|
       Array.new(board.size) do |col|
         sp = SquarePresenter.new(board.squares[row][col])
-        sp.on_select { |x, y| select_square(x, y, notify_on_select: true) }
+        sp.on_select { |position| select_square(position[:row], position[:col], notify_on_select: true) }
         sp
       end
     end
@@ -23,9 +23,10 @@ class BoardPresenter
     @on_select_square = block
   end
 
-  def select_square(x, y, notify_on_select: false)
-    @selected_square = x.nil? ? nil : [x, y]
-    @on_select_square.call(x, y) if notify_on_select && @on_select_square
+  def select_square(row, col, notify_on_select: false)
+    puts "board_component#select_square(#{row}, #{col})"
+    @selected_square = row.nil? ? nil : [row, col]
+    @on_select_square.call(row, col) if notify_on_select && @on_select_square
   end
 
   def selected_square

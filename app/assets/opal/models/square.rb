@@ -1,7 +1,9 @@
 class Square
   attr_accessor :letter
+  attr_reader :position
 
-  def initialize(letter: nil)
+  def initialize(position, letter: nil)
+    @position = position
     @letter = letter || 'B'
     @selected = false
   end

@@ -15,10 +15,11 @@ class SquarePresenter
   end
 
   def select(notify_on_select: false)
-    @on_select.call(@square.x, @square.y) if notify_on_select && @on_select
+    @on_select.call(@square.position) if notify_on_select && @on_select
   end
 
   def selected
-    @on_select.call(@square.row, @square.col)
+    puts "square_presenter#selected:#{@square.position}"
+    @on_select.call(@square.position)
   end
 end

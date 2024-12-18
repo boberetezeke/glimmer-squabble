@@ -5,7 +5,7 @@ class Board
     @size = size
     @squares = Array.new(size) do |row|
       Array.new(size) do |col|
-        Square.new
+        Square.new({row: row, col: col})
       end
     end
   end

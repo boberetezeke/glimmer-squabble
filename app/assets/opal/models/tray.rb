@@ -4,8 +4,8 @@ class Tray
   def initialize(size, letters)
     @size = size
     @selected_index = nil
-    @squares = Array.new(size) do |row|
-      Square.new
+    @squares = Array.new(size) do |col|
+      Square.new({col: col})
     end
     @squares.each_with_index do |square, index|
       square.letter = letters[index]
