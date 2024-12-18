@@ -1,4 +1,11 @@
+require 'forwardable'
+
 class SquarePresenter
+  extend Forwardable
+
+  def_delegator :@square, :letter
+  def_delegator :@square, :letter=
+
   def initialize(square)
     @square = square
   end

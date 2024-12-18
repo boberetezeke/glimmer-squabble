@@ -1,4 +1,13 @@
+require 'forwardable'
+
 class BoardPresenter
+  extend Forwardable
+
+  def_delegator :@board, :size
+  def_delegator :@board, :squares
+
+  attr_reader :square_presenters
+
   def initialize(board)
     @board = board
     @square_presenters = Array.new(board.size) do |row|

@@ -1,4 +1,6 @@
 class TrayPresenter
+  attr_reader :square_presenters
+
   def initialize(tray)
     @tray = tray
     @square_presenters = Array.new(tray.size) do |col|
