@@ -10,13 +10,6 @@ describe TrayPresenter do
       expect(subject.selected_square).to eq(tray.squares[1])
     end
 
-    it 'notifies the on_selector of the selected square' do
-      subject.on_select_square do |col|
-        expect(col).to eq(1)
-      end
-      subject.select_square(1, notify_on_select: true)
-    end
-
     it 'unselects a square' do
       subject.select_square(1)
       subject.select_square(nil)

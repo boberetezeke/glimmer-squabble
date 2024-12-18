@@ -12,6 +12,7 @@ class GameComponent
     div do
       board_component board_presenter: game_presenter.board_presenter
     end
+    hr
     div do
       tray_component tray_presenter: game_presenter.tray_presenter
     end

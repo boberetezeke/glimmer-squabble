@@ -5,17 +5,19 @@ class SquarePresenter
 
   def_delegator :@square, :letter
   def_delegator :@square, :letter=
+  attr_accessor :is_selected
 
   def initialize(square)
     @square = square
+    @is_selected = false
   end
 
   def on_select(&block)
     @on_select = block
   end
 
-  def select(notify_on_select: false)
-    @on_select.call(@square.position) if notify_on_select && @on_select
+  def select(selected)
+    self.is_selected = selected
   end
 
   def selected

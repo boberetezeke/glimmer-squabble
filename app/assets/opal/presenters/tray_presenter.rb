@@ -5,7 +5,7 @@ class TrayPresenter
     @tray = tray
     @square_presenters = Array.new(tray.size) do |col|
       sp = SquarePresenter.new(tray.squares[col])
-      sp.on_select { |x, y| select_square(col, notify_on_select: true) }
+      sp.on_select { |position| square_selected(position[:col]) }
       sp
     end
   end
@@ -14,9 +14,19 @@ class TrayPresenter
     @on_select_square = block
   end
 
-  def select_square(col, notify_on_select: false)
+  def square_selected(col)
+    puts "tray_presenter#square_selected(#{col})"
+    @on_select_square.call(col) if @on_select_square
+  end
+
+  def select_square(col)
+    puts "tray_presenter#select_square(#{col})"
+    if col.nil?
+     @square_presenters[@selected_square].select(false) if @selected_square
+    else
+      @square_presenters[col].select(true)
+    end
     @selected_square = col
-    @on_select_square.call(col) if notify_on_select && @on_select_square
   end
 
   def selected_square

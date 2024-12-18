@@ -5,10 +5,5 @@ class Square
   def initialize(position, letter: nil)
     @position = position
     @letter = letter || 'B'
-    @selected = false
-  end
-
-  def select
-    @selected = true
   end
 end

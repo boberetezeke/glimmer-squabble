@@ -9,7 +9,7 @@ describe SquarePresenter do
       subject.on_select do
         expect(true).to be_truthy
       end
-      subject.select
+      subject.selected
     end
   end
 end
