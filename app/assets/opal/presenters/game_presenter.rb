@@ -19,25 +19,25 @@ class GamePresenter
   end
 
   def setup_on_selects
-    @tray_presenter.on_select_square do |index|
-      tray_square_selected(index)
+    @tray_presenter.on_select_square do |position|
+      tray_square_selected(position)
     end
-    @board_presenter.on_select_square do |row, col|
-      board_square_selected(row, col)
+    @board_presenter.on_select_square do |position|
+      board_square_selected(position)
     end
   end
 
-  def board_square_selected(row, col)
-    puts "game_presenter#board_square_selected(#{row}, #{col})"
+  def board_square_selected(board_position)
+    puts "game_presenter#board_square_selected(#{board_position})"
     if tray_presenter.selected_square
       letter = tray_presenter.selected_square.letter
       return unless letter
 
-      board_presenter.place_letter(row, col, letter)
+      board_presenter.place_letter(board_position, letter)
       tray_presenter.place_letter(tray_presenter.selected_position, nil)
       tray_presenter.select_square(nil)
     else
-      board_presenter.select_square(row, col)
+      board_presenter.select_square(board_position)
     end
   end
 
@@ -48,9 +48,9 @@ class GamePresenter
       return unless letter
 
       position = board_presenter.selected_position
-      board_presenter.place_letter(position[0], position[1], nil)
+      board_presenter.place_letter(position, nil)
       tray_presenter.place_letter(col, letter)
-      board_presenter.select_square(nil, nil)
+      board_presenter.select_square(nil)
     else
       tray_presenter.select_square(col)
     end

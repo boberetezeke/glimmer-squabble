@@ -22,30 +22,31 @@ class TrayPresenter
   def select_square(col)
     puts "tray_presenter#select_square(#{col})"
     if col.nil?
-     @square_presenters[@selected_square].select(false) if @selected_square
-     @selected_square = nil
+     @square_presenters[@selected_position].select(false) if @selected_position
+     @selected_position = nil
     else
-      @square_presenters[@selected_square].select(false) if @selected_square
-      if @selected_square == col
-        @selected_square = nil
+      @square_presenters[@selected_position].select(false) if @selected_position
+      if @selected_position == col
+        @selected_position = nil
       else
         @square_presenters[col].select(true)
-        @selected_square = col
+        @selected_position = col
       end
     end
   end
 
   def selected_square
-    return nil unless @selected_square
+    return nil unless @selected_position
 
-    @tray.squares[@selected_square]
+    @tray.squares[@selected_position]
   end
 
   def selected_position
-    @selected_square
+    @selected_position
   end
 
-  def place_letter(col, letter)
+  def place_letter(position, letter)
+    col = position
     puts "tray_presenter#place_letter(#{col},#{letter})"
     @square_presenters[col].letter = letter
   end

@@ -25,35 +25,37 @@ class BoardPresenter
 
   def square_selected(row, col)
     puts "board_presenter#square_selected(#{row},#{col})"
-    @on_select_square.call(row, col) if @on_select_square
+    @on_select_square.call([row, col]) if @on_select_square
   end
 
-  def select_square(row, col)
+  def select_square(board_position)
+    row, col = board_position
     if row.nil?
-      @square_presenters[@selected_square[0]][@selected_square[1]].select(false) if @selected_square
-      @selected_square = nil
+      @square_presenters[@selected_position[0]][@selected_position[1]].select(false) if @selected_position
+      @selected_position = nil
     else
-      @square_presenters[@selected_square[0]][@selected_square[1]].select(false) if @selected_square
-      if @selected_square == [row, col]
-        @selected_square = nil
+      @square_presenters[@selected_position[0]][@selected_position[1]].select(false) if @selected_position
+      if @selected_position == [row, col]
+        @selected_position = nil
       else
         @square_presenters[row][col].select(true)
-        @selected_square = [row, col]
+        @selected_position = [row, col]
       end
     end
   end
 
   def selected_square
-    return nil unless @selected_square
+    return nil unless @selected_position
 
-    @board.squares[@selected_square[0]][@selected_square[1]]
+    @board.squares[@selected_position[0]][@selected_position[1]]
   end
 
   def selected_position
-    @selected_square
+    @selected_position
   end
 
-  def place_letter(row, col, letter)
+  def place_letter(position, letter)
+    row, col = position
     puts "board_presenter#place_letter(#{row},#{col},#{letter})"
     @square_presenters[row][col].letter = letter
   end

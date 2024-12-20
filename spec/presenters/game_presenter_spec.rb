@@ -38,27 +38,27 @@ describe GamePresenter do
   describe '#board_square_selected' do
     context 'when nothing is selected in the tray or the board' do
       it 'marks the square as selected on the board' do
-        subject.board_square_selected(1, 1)
+        subject.board_square_selected([1, 1])
         expect(board_presenter.selected_square).to eq(board.squares[1][1])
       end
     end
 
     context 'when the same square is selected on the board' do
       it 'marks the square as selected on the board' do
-        subject.board_square_selected(1, 1)
+        subject.board_square_selected([1, 1])
         expect(board_presenter.selected_square).to eq(board.squares[1][1])
-        subject.board_square_selected(1, 1)
+        subject.board_square_selected([1, 1])
         expect(board_presenter.selected_square).to be_nil
       end
     end
 
     context 'when a different square is selected on the board' do
       before do
-        subject.board_square_selected(1, 1)
+        subject.board_square_selected([1, 1])
       end
 
       it 'marks the square as selected on the board' do
-        subject.board_square_selected(2, 2)
+        subject.board_square_selected([2, 2])
         expect(board_presenter.selected_square).to eq(board.squares[2][2])
       end
     end
@@ -66,7 +66,7 @@ describe GamePresenter do
     context 'when a square is selected on the tray' do
       before do
         tray_presenter.select_square(1)
-        subject.board_square_selected(1, 1)
+        subject.board_square_selected([1, 1])
       end
 
       it 'unselects the square on the layer' do
@@ -112,7 +112,7 @@ describe GamePresenter do
     context 'when a square on the board is selected' do
       before do
         board.squares[1][1].letter = 'B'
-        board_presenter.select_square(1, 1)
+        board_presenter.select_square([1, 1])
         subject.tray_square_selected(4)
       end
 
