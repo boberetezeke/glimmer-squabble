@@ -34,6 +34,7 @@ class GamePresenter
       return unless letter
 
       board_presenter.place_letter(row, col, letter)
+      tray_presenter.place_letter(tray_presenter.selected_position, nil)
       tray_presenter.select_square(nil)
     else
       board_presenter.select_square(row, col)

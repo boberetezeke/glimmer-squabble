@@ -31,11 +31,16 @@ class BoardPresenter
   def select_square(row, col)
     if row.nil?
       @square_presenters[@selected_square[0]][@selected_square[1]].select(false) if @selected_square
+      @selected_square = nil
     else
       @square_presenters[@selected_square[0]][@selected_square[1]].select(false) if @selected_square
-      @square_presenters[row][col].select(true)
+      if @selected_square == [row, col]
+        @selected_square = nil
+      else
+        @square_presenters[row][col].select(true)
+        @selected_square = [row, col]
+      end
     end
-    @selected_square = row.nil? ? nil : [row, col]
   end
 
   def selected_square
@@ -45,6 +50,7 @@ class BoardPresenter
   end
 
   def place_letter(row, col, letter)
-    @board.squares[row][col].letter = letter
+    puts "board_presenter#place_letter(#{row},#{col},#{letter})"
+    @square_presenters[row][col].letter = letter
   end
 end

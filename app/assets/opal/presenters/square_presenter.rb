@@ -3,13 +3,19 @@ require 'forwardable'
 class SquarePresenter
   extend Forwardable
 
-  def_delegator :@square, :letter
-  def_delegator :@square, :letter=
   attr_accessor :is_selected
 
   def initialize(square)
     @square = square
     @is_selected = false
+  end
+
+  def letter
+    @square.letter || "_"
+  end
+
+  def letter=(letter)
+    @square.letter = letter
   end
 
   def on_select(&block)

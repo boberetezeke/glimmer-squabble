@@ -4,6 +4,6 @@ class Square
 
   def initialize(position, letter: nil)
     @position = position
-    @letter = letter || 'B'
+    @letter = letter
   end
 end
