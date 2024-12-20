@@ -49,6 +49,10 @@ class BoardPresenter
     @board.squares[@selected_square[0]][@selected_square[1]]
   end
 
+  def selected_position
+    @selected_square
+  end
+
   def place_letter(row, col, letter)
     puts "board_presenter#place_letter(#{row},#{col},#{letter})"
     @square_presenters[row][col].letter = letter

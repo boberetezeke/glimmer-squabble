@@ -124,6 +124,10 @@ describe GamePresenter do
         expect(tray_presenter.selected_square).to be_nil
       end
 
+      it 'clears a letter back on the board' do
+        expect(board.squares[1][1].letter).to be_nil
+      end
+
       it 'moves a letter back to the tray' do
         expect(tray.squares[4].letter).to eq('B')
       end
