@@ -6,12 +6,24 @@ describe TrayPresenter do
 
   describe '#select_square' do
     it 'selects a square' do
+      expect(subject.square_presenters[1]).to receive(:select).with(true)
       subject.select_square(1)
       expect(subject.selected_square).to eq(tray.squares[1])
     end
 
-    it 'unselects a square' do
+    it 'selects another square' do
+      expect(subject.square_presenters[1]).to receive(:select).with(true)
       subject.select_square(1)
+      expect(subject.square_presenters[1]).to receive(:select).with(false)
+      expect(subject.square_presenters[2]).to receive(:select).with(true)
+      subject.select_square(2)
+      expect(subject.selected_square).to eq(tray.squares[2])
+    end
+
+    it 'unselects a square' do
+      expect(subject.square_presenters[1]).to receive(:select).with(true)
+      subject.select_square(1)
+      expect(subject.square_presenters[1]).to receive(:select).with(false)
       subject.select_square(nil)
       expect(subject.selected_square).to be_nil
     end

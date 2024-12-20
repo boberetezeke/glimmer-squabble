@@ -14,5 +14,5 @@
  *= require_self
  */
 
-.square_selected { color: red; }
+.square_selected { color: white; background-color: red; }
 .square { font-size: 48pt; border: 1px solid gray; }

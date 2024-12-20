@@ -42,7 +42,7 @@ describe GamePresenter do
       end
 
       it 'marks the square as selected on the board' do
-        expect(board_presenter.selected_square).not_to be_nil
+        expect(board_presenter.selected_square).to eq(board.squares[1][1])
       end
     end
 
@@ -78,22 +78,31 @@ describe GamePresenter do
   end
 
   describe '#tray_square_selected' do
-    before do
-      board.squares[1][1].letter = 'B'
-      board_presenter.select_square(1, 1)
-      subject.tray_square_selected(4)
+    context 'when there are no squares selected' do
+      it 'selects a square' do
+        subject.tray_square_selected(2)
+        expect(tray_presenter.selected_square).not_to be_nil
+      end
     end
 
-    it 'unselects the square on the board' do
-      expect(board_presenter.selected_square).to be_nil
-    end
+    context 'when a square on the board is selected' do
+      before do
+        board.squares[1][1].letter = 'B'
+        board_presenter.select_square(1, 1)
+        subject.tray_square_selected(4)
+      end
 
-    it 'unselects the square on the tray' do
-      expect(tray_presenter.selected_square).to be_nil
-    end
+      it 'unselects the square on the board' do
+        expect(board_presenter.selected_square).to be_nil
+      end
 
-    it 'moves a letter back to the tray' do
-      expect(tray.squares[4].letter).to eq('B')
+      it 'unselects the square on the tray' do
+        expect(tray_presenter.selected_square).to be_nil
+      end
+
+      it 'moves a letter back to the tray' do
+        expect(tray.squares[4].letter).to eq('B')
+      end
     end
   end
 end

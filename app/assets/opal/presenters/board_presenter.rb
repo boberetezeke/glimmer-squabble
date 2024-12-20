@@ -32,6 +32,7 @@ class BoardPresenter
     if row.nil?
       @square_presenters[@selected_square[0]][@selected_square[1]].select(false) if @selected_square
     else
+      @square_presenters[@selected_square[0]][@selected_square[1]].select(false) if @selected_square
       @square_presenters[row][col].select(true)
     end
     @selected_square = row.nil? ? nil : [row, col]

@@ -24,6 +24,7 @@ class TrayPresenter
     if col.nil?
      @square_presenters[@selected_square].select(false) if @selected_square
     else
+      @square_presenters[@selected_square].select(false) if @selected_square
       @square_presenters[col].select(true)
     end
     @selected_square = col

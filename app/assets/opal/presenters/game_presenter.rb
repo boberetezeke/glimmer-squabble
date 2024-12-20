@@ -42,12 +42,14 @@ class GamePresenter
 
   def tray_square_selected(col)
     puts "game_presenter#tray_square_selected(#{col})"
-    return unless board_presenter.selected_square
+    if board_presenter.selected_square
+      letter = board_presenter.selected_square.letter
+      return unless letter
 
-    letter = board_presenter.selected_square.letter
-    return unless letter
-
-    tray_presenter.place_letter(col, letter)
-    board_presenter.select_square(nil, nil)
+      tray_presenter.place_letter(col, letter)
+      board_presenter.select_square(nil, nil)
+    else
+      tray_presenter.select_square(col)
+    end
   end
 end
