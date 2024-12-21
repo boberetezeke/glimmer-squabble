@@ -33,26 +33,25 @@ class GamePresenter
       letter = tray_presenter.selected_square.letter
       return unless letter
 
-      board_presenter.place_letter(board_position, letter)
       tray_presenter.place_letter(tray_presenter.selected_position, nil)
+      board_presenter.place_letter(board_position, letter)
       tray_presenter.select_square(nil)
     else
       board_presenter.select_square(board_position)
     end
   end
 
-  def tray_square_selected(col)
-    puts "game_presenter#tray_square_selected(#{col})"
+  def tray_square_selected(tray_position)
+    puts "game_presenter#tray_square_selected(#{tray_position})"
     if board_presenter.selected_square
       letter = board_presenter.selected_square.letter
       return unless letter
 
-      position = board_presenter.selected_position
-      board_presenter.place_letter(position, nil)
-      tray_presenter.place_letter(col, letter)
+      board_presenter.place_letter(board_presenter.selected_position, nil)
+      tray_presenter.place_letter(tray_position, letter)
       board_presenter.select_square(nil)
     else
-      tray_presenter.select_square(col)
+      tray_presenter.select_square(tray_position)
     end
   end
 end
