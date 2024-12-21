@@ -4,6 +4,8 @@ class SquarePresenter
   extend Forwardable
 
   attr_accessor :is_selected
+  def_delegator :@square, :is_played
+  def_delegator :@square, :is_played=
 
   def initialize(square)
     @square = square

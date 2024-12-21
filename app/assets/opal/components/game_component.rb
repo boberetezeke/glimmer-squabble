@@ -17,7 +17,7 @@ class GameComponent
       tray_component tray_presenter: game_presenter.tray_presenter
     end
     div do
-      actions_component player: game_presenter.current_player
+      player_component player_presenter: game_presenter.player_presenter
     end
   end
 end

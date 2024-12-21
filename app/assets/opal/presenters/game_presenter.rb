@@ -7,13 +7,14 @@ class GamePresenter
   def_delegator :@game, :players
   def_delegator :@game, :pass
 
-  attr_reader :tray_presenter, :board_presenter, :player_presenter
+  attr_reader :tray_presenter, :board_presenter, :player_presenter, :placed_letters
 
   def initialize(game)
     @game = game
     @tray_presenter = TrayPresenter.new(game.tray)
     @board_presenter = BoardPresenter.new(game.board)
     @player_presenter = PlayerPresenter.new(game.current_player)
+    @placed_letters = []
 
     setup_on_selects
   end
@@ -25,6 +26,12 @@ class GamePresenter
     @board_presenter.on_select_square do |position|
       board_square_selected(position)
     end
+    @player_presenter.on_play_pressed do
+      play_pressed
+    end
+    @player_presenter.on_pass_pressed do
+      pass_pressed
+    end
   end
 
   def board_square_selected(board_position)
@@ -35,6 +42,7 @@ class GamePresenter
 
       tray_presenter.place_letter(tray_presenter.selected_position, nil)
       board_presenter.place_letter(board_position, letter)
+      @placed_letters << PlacedLetter.new(board_position, letter)
       tray_presenter.select_square(nil)
     else
       board_presenter.select_square(board_position)
@@ -53,5 +61,18 @@ class GamePresenter
     else
       tray_presenter.select_square(tray_position)
     end
+  end
+
+  def play_pressed
+    puts "game_presenter#play_pressed #{@placed_letters}"
+    return unless @placed_letters.any?
+
+    @placed_letters.each do |placed_letter|
+      puts "placing #{placed_letter}"
+      board_presenter.square_presenters_for(placed_letter.position).is_played = true
+    end
+  end
+
+  def pass_pressed
   end
 end

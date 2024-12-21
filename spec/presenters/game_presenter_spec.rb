@@ -36,6 +36,15 @@ describe GamePresenter do
   end
 
   describe '#board_square_selected' do
+    context 'when there is a played letter on the selected square' do
+      it 'doesnt allow a played letter to be selected' do
+        board.squares[1][1].letter = 'A'
+        board.squares[1][1].is_played = true
+        subject.board_square_selected([1, 1])
+        expect(board_presenter.selected_square).to be_nil
+      end
+    end
+
     context 'when nothing is selected in the tray or the board' do
       it 'marks the square as selected on the board' do
         subject.board_square_selected([1, 1])
@@ -79,6 +88,10 @@ describe GamePresenter do
 
       it 'places the letter on the board' do
         expect(board.squares[1][1].letter).to eq('B')
+      end
+
+      it 'adds to the played letters' do
+        expect(subject.placed_letters).to eq([PlacedLetter.new([1, 1], 'B')])
       end
 
       it 'clears the letter on the tray' do
@@ -130,6 +143,17 @@ describe GamePresenter do
 
       it 'moves a letter back to the tray' do
         expect(tray.squares[4].letter).to eq('B')
+      end
+    end
+
+    describe '#play_pressed' do
+      it 'plays the word' do
+        subject.tray_square_selected(2)
+        subject.board_square_selected([1, 1])
+        subject.play_pressed
+        expect(board.squares[1][1].letter).to eq('C')
+        expect(board.squares[1][1].is_played).to be_truthy
+        expect(tray.squares[2].letter).to be_nil
       end
     end
   end

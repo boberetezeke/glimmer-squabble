@@ -1,4 +1,4 @@
-class ActionsComponent
+class PlayerComponent
   include Glimmer::Web::Component
 
   option :player_presenter
@@ -16,12 +16,14 @@ class ActionsComponent
         button 'pass'
         onclick do
           puts 'pass'
+          player_presenter.pass_pressed
         end
       end
       div do
         button 'submit'
         onclick do
           puts 'submit'
+          player_presenter.play_pressed
         end
       end
     end

@@ -29,17 +29,23 @@ class BoardPresenter
   end
 
   def select_square(board_position)
+    srow, scol = @selected_position
+    s_square_presenter = @square_presenters[srow][scol] if @selected_position
     row, col = board_position
-    if row.nil?
-      @square_presenters[@selected_position[0]][@selected_position[1]].select(false) if @selected_position
+    n_square_presenter = @square_presenters[row][col] if board_position
+
+    return if n_square_presenter&.is_played
+
+    if board_position.nil?
+      s_square_presenter.select(false) if @selected_position
       @selected_position = nil
     else
-      @square_presenters[@selected_position[0]][@selected_position[1]].select(false) if @selected_position
-      if @selected_position == [row, col]
+      s_square_presenter.select(false) if @selected_position
+      if @selected_position == board_position
         @selected_position = nil
       else
-        @square_presenters[row][col].select(true)
-        @selected_position = [row, col]
+        n_square_presenter.select(true)
+        @selected_position = board_position
       end
     end
   end
@@ -47,11 +53,17 @@ class BoardPresenter
   def selected_square
     return nil unless @selected_position
 
-    @board.squares[@selected_position[0]][@selected_position[1]]
+    srow, scol = @selected_position
+    @board.squares[srow][scol]
   end
 
   def selected_position
     @selected_position
+  end
+
+  def square_presenters_for(position)
+    row, col = position
+    @square_presenters[row][col]
   end
 
   def place_letter(position, letter)
