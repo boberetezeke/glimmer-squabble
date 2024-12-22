@@ -7,6 +7,8 @@ class SquarePresenter
   def_delegator :@square, :is_played
   def_delegator :@square, :is_played=
 
+  attr_reader :square
+
   def initialize(square)
     @square = square
     @is_selected = false

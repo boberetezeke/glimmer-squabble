@@ -147,13 +147,50 @@ describe GamePresenter do
     end
 
     describe '#play_pressed' do
-      it 'plays the word' do
+      before do
         subject.tray_square_selected(2)
         subject.board_square_selected([1, 1])
         subject.play_pressed
+      end
+
+      it 'places the letter' do
         expect(board.squares[1][1].letter).to eq('C')
+      end
+
+      it 'marks it as played' do
         expect(board.squares[1][1].is_played).to be_truthy
+      end
+
+      it 'saves the play in the play history' do
+        expect(subject.play_history).to eq([PlayedWord.new(player_1, [PlacedLetter.new([1, 1], 'C')])])
+      end
+
+      it 'clears the placed letters' do
+        expect(subject.placed_letters).to be_empty
+      end
+
+      it 'clears the letter on the tray' do
         expect(tray.squares[2].letter).to be_nil
+      end
+    end
+
+    describe '#pass_pressed' do
+      before do
+        subject.tray_square_selected(2)
+        subject.board_square_selected([1, 1])
+        subject.pass_pressed
+      end
+
+      it 'puts the letters back on the tray' do
+        expect(tray.squares[2].letter).to eq('C')
+      end
+
+      it 'clears the letters off of the board' do
+        expect(board.squares[1][1].letter).to be_nil
+      end
+
+      it 'clears the placed letters' do
+        expect(subject.placed_letters).to be_empty
       end
     end
   end

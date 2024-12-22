@@ -50,4 +50,11 @@ class TrayPresenter
     puts "tray_presenter#place_letter(#{col},#{letter})"
     @square_presenters[col].letter = letter
   end
+
+  def first_empty_position
+    @square_presenters.each_with_index do |sp, i|
+      return i if sp.square.letter.nil?
+    end
+    nil
+  end
 end

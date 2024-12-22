@@ -7,7 +7,8 @@ class GamePresenter
   def_delegator :@game, :players
   def_delegator :@game, :pass
 
-  attr_reader :tray_presenter, :board_presenter, :player_presenter, :placed_letters
+  attr_reader :tray_presenter, :board_presenter, :player_presenter
+  attr_reader :placed_letters, :play_history
 
   def initialize(game)
     @game = game
@@ -15,6 +16,7 @@ class GamePresenter
     @board_presenter = BoardPresenter.new(game.board)
     @player_presenter = PlayerPresenter.new(game.current_player)
     @placed_letters = []
+    @play_history = []
 
     setup_on_selects
   end
@@ -71,8 +73,19 @@ class GamePresenter
       puts "placing #{placed_letter}"
       board_presenter.square_presenters_for(placed_letter.position).is_played = true
     end
+    @play_history << PlayedWord.new(current_player, @placed_letters)
+    @placed_letters = []
   end
 
   def pass_pressed
+    puts "game_presenter#pass_pressed #{@placed_letters}"
+    return unless @placed_letters.any?
+
+    @placed_letters.each do |placed_letter|
+      board_presenter.square_presenters_for(placed_letter.position).letter = nil
+      # suggested by co-pilot
+      tray_presenter.place_letter(tray_presenter.first_empty_position, placed_letter.letter)
+    end
+    @placed_letters = []
   end
 end
