@@ -57,4 +57,22 @@ class TrayPresenter
     end
     nil
   end
+
+  def remove_player_letters(player)
+    player.clear_letters
+    @square_presenters.each_with_index do |square_presenter, index|
+      if square_presenter.letter
+        player.add_letter(square_presenter.letter)
+      end
+      @square_presenters[index].letter = nil
+    end
+  end
+
+  def add_player_letters(player)
+    @square_presenters.each_with_index do |square_presenter, index|
+      letter = player.letters[index]
+      square_presenter.letter = letter
+    end
+    player.clear_letters
+  end
 end

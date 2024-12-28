@@ -12,11 +12,4 @@ class Tray
     end
   end
 
-  def select_square(index)
-    @selected_index = index
-  end
-
-  def selected_square
-
-  end
 end

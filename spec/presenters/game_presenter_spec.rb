@@ -7,8 +7,10 @@ describe GamePresenter do
   let(:game) { Game.new(board, tray, [player_1, player_2]) }
   let(:board) { Board.new(3) }
   let(:tray) { Tray.new(7, ['A', 'B', 'C', 'D']) }
-  let(:player_1) { Player.new('player_1') }
-  let(:player_2) { Player.new('player_2') }
+  let(:player_1) { Player.new('player_1', letters: ['A', 'B', 'C', 'D']) }
+  let(:player_2) { Player.new('player_2', letters: ['M', 'N', 'O', 'P']) }
+  let(:player_1_presenter) { subject.player_presenters.find{ |pp| pp.player == player_1} }
+  let(:player_2_presenter) { subject.player_presenters.find{ |pp| pp.player == player_2} }
 
   describe '#current_player' do
     it 'is the first player' do
@@ -147,10 +149,12 @@ describe GamePresenter do
     end
 
     describe '#play_pressed' do
+      let(:move_to_next_player) { true }
+
       before do
         subject.tray_square_selected(2)
         subject.board_square_selected([1, 1])
-        subject.play_pressed
+        subject.play_pressed(move_to_next_player: move_to_next_player)
       end
 
       it 'places the letter' do
@@ -169,8 +173,30 @@ describe GamePresenter do
         expect(subject.placed_letters).to be_empty
       end
 
-      it 'clears the letter on the tray' do
-        expect(tray.squares[2].letter).to be_nil
+      context 'when play advances to the next player' do
+        it 'advances the player' do
+          expect(subject.current_player_presenter).to eq(player_2_presenter)
+        end
+
+        it 'replaces the letters on the tray with the next players letters' do
+          expect(tray.squares.map(&:letter)).to eq(['M', 'N', 'O', 'P', nil, nil, nil])
+        end
+
+        it 'adds to the players score' do
+          expect(player_1.score).to eq(1)
+        end
+      end
+
+      context 'when play doesnt advance to the next player' do
+        let(:move_to_next_player) { false }
+
+        it 'clears out the tray' do
+          expect(tray.squares.map(&:letter)).to eq([nil, nil, nil, nil, nil, nil, nil])
+        end
+
+        it 'adds to the players score' do
+          expect(player_1.score).to eq(1)
+        end
       end
     end
 
@@ -181,16 +207,20 @@ describe GamePresenter do
         subject.pass_pressed
       end
 
-      it 'puts the letters back on the tray' do
-        expect(tray.squares[2].letter).to eq('C')
-      end
-
       it 'clears the letters off of the board' do
         expect(board.squares[1][1].letter).to be_nil
       end
 
       it 'clears the placed letters' do
         expect(subject.placed_letters).to be_empty
+      end
+
+      it 'advances the player' do
+        expect(subject.current_player_presenter).to eq(player_2_presenter)
+      end
+
+      it 'replaces the letters on the tray with the next players letters' do
+        expect(tray.squares.map(&:letter)).to eq(['M', 'N', 'O', 'P', nil, nil, nil])
       end
     end
   end

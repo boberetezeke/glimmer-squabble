@@ -1,5 +1,16 @@
+require 'forwardable'
+
 class PlayerPresenter
+  extend Forwardable
+
   attr_reader :player
+
+  def_delegator :@player, :name
+  def_delegator :@player, :name=
+  def_delegator :@player, :score
+  def_delegator :@player, :score=
+  def_delegator :@player, :letters
+  def_delegator :@player, :letters=
 
   def initialize(player)
     @player = player

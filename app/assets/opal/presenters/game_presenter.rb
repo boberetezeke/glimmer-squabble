@@ -7,14 +7,15 @@ class GamePresenter
   def_delegator :@game, :players
   def_delegator :@game, :pass
 
-  attr_reader :tray_presenter, :board_presenter, :player_presenter
+  attr_reader :tray_presenter, :board_presenter, :player_presenters, :action_presenter
   attr_reader :placed_letters, :play_history
 
   def initialize(game)
     @game = game
     @tray_presenter = TrayPresenter.new(game.tray)
     @board_presenter = BoardPresenter.new(game.board)
-    @player_presenter = PlayerPresenter.new(game.current_player)
+    @player_presenters = @game.players.map{ |player| PlayerPresenter.new(player) }
+    @action_presenter = ActionPresenter.new
     @placed_letters = []
     @play_history = []
 
@@ -28,10 +29,10 @@ class GamePresenter
     @board_presenter.on_select_square do |position|
       board_square_selected(position)
     end
-    @player_presenter.on_play_pressed do
+    @action_presenter.on_play_pressed do
       play_pressed
     end
-    @player_presenter.on_pass_pressed do
+    @action_presenter.on_pass_pressed do
       pass_pressed
     end
   end
@@ -65,16 +66,22 @@ class GamePresenter
     end
   end
 
-  def play_pressed
+  def play_pressed(move_to_next_player: true)
     puts "game_presenter#play_pressed #{@placed_letters}"
     return unless @placed_letters.any?
 
+    score = current_player_presenter.score
     @placed_letters.each do |placed_letter|
       puts "placing #{placed_letter}"
       board_presenter.square_presenters_for(placed_letter.position).is_played = true
+      score += 1
     end
+
+    current_player_presenter.score = score
     @play_history << PlayedWord.new(current_player, @placed_letters)
     @placed_letters = []
+
+    go_to_next_player(move_to_next_player: move_to_next_player)
   end
 
   def pass_pressed
@@ -87,5 +94,19 @@ class GamePresenter
       tray_presenter.place_letter(tray_presenter.first_empty_position, placed_letter.letter)
     end
     @placed_letters = []
+
+    go_to_next_player
+  end
+
+  def current_player_presenter
+    @player_presenters[@game.current_player_index]
+  end
+
+  def go_to_next_player(move_to_next_player: true)
+    @tray_presenter.remove_player_letters(current_player)
+    return unless move_to_next_player
+
+    @game.next_player
+    @tray_presenter.add_player_letters(current_player)
   end
 end

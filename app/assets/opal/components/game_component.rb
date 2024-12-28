@@ -4,11 +4,11 @@ class GameComponent
   option :game_presenter
 
   markup do
-    # div(style: {display: 'flex'}) do
-    #   game_presenter.players.each do |player|
-    #     score_component player: player
-    #   end
-    # end
+    div(style: {display: 'flex'}) do
+      game_presenter.player_presenters.each do |player_presenter|
+        player_component player_presenter: player_presenter
+      end
+    end
     div do
       board_component board_presenter: game_presenter.board_presenter
     end
@@ -17,7 +17,7 @@ class GameComponent
       tray_component tray_presenter: game_presenter.tray_presenter
     end
     div do
-      player_component player_presenter: game_presenter.player_presenter
+      action_component action_presenter: game_presenter.action_presenter
     end
   end
 end
