@@ -1,0 +1,1 @@
+../assets/opal/models/placed_letter.rb

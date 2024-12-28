@@ -1,7 +1,8 @@
 class Game
-  attr_reader :board, :tray, :players, :current_player_index
-  def initialize(board, tray, players)
+  attr_reader :board, :bag, :tray, :players, :current_player_index
+  def initialize(board, bag, tray, players)
     @board = board
+    @bag = bag
     @tray = tray
     @players = players
     @current_player_index = 0

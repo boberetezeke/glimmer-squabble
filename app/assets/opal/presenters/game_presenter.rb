@@ -7,7 +7,7 @@ class GamePresenter
   def_delegator :@game, :players
   def_delegator :@game, :pass
 
-  attr_reader :tray_presenter, :board_presenter, :player_presenters, :action_presenter
+  attr_reader :tray_presenter, :board_presenter, :player_presenters, :action_presenter, :bag_presenter
   attr_reader :placed_letters, :play_history
 
   def initialize(game)
@@ -16,6 +16,7 @@ class GamePresenter
     @board_presenter = BoardPresenter.new(game.board)
     @player_presenters = @game.players.map{ |player| PlayerPresenter.new(player) }
     @action_presenter = ActionPresenter.new
+    @bag_presenter = BagPresenter.new(game.bag)
     @placed_letters = []
     @play_history = []
 
@@ -66,9 +67,11 @@ class GamePresenter
     end
   end
 
-  def play_pressed(move_to_next_player: true)
+  def play_pressed(return_before: :nothing)
     puts "game_presenter#play_pressed #{@placed_letters}"
     return unless @placed_letters.any?
+
+    drawn_letters = bag_presenter.draw(@placed_letters.size)
 
     score = current_player_presenter.score
     @placed_letters.each do |placed_letter|
@@ -81,12 +84,21 @@ class GamePresenter
     @play_history << PlayedWord.new(current_player, @placed_letters)
     @placed_letters = []
 
-    go_to_next_player(move_to_next_player: move_to_next_player)
+    drawn_letter_index = 0
+    tray_presenter.square_presenters.each_with_index do |square_presenter, index|
+      unless square_presenter.raw_letter
+        tray_presenter.place_letter(index, drawn_letters[drawn_letter_index])
+        drawn_letter_index += 1
+      end
+    end
+
+    return if return_before == :go_to_next_player
+
+    go_to_next_player(move_to_next_player: return_before != :place_next_player_letters)
   end
 
   def pass_pressed
     puts "game_presenter#pass_pressed #{@placed_letters}"
-    return unless @placed_letters.any?
 
     @placed_letters.each do |placed_letter|
       board_presenter.square_presenters_for(placed_letter.position).letter = nil

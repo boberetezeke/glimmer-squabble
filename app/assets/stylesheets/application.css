@@ -16,4 +16,4 @@
 
 .square_played { color: lightgray; background-color: white; }
 .square_selected { color: white; background-color: red; }
-.square { font-size: 48pt; border: 1px solid gray; }
+.square { font-size: 16pt; border: 1px solid gray; }

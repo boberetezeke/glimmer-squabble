@@ -18,6 +18,10 @@ class SquarePresenter
     @square.letter || "_"
   end
 
+  def raw_letter
+    @square.letter
+  end
+
   def letter=(letter)
     @square.letter = letter
   end

@@ -1,0 +1,1 @@
+../assets/opal/models/played_word.rb

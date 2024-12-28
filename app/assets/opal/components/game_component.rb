@@ -19,5 +19,8 @@ class GameComponent
     div do
       action_component action_presenter: game_presenter.action_presenter
     end
+    div do
+      bag_component bag_presenter: game_presenter.bag_presenter
+    end
   end
 end
