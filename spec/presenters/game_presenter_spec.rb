@@ -69,14 +69,14 @@ describe GamePresenter do
         subject.board_presenter.select_square([1, 1])
       end
 
-      context 'when the other square is empty' do
+      context 'when both squares are empty' do
         it 'marks the square as selected on the board' do
           subject.board_square_selected([2, 2])
           expect(board_presenter.selected_square).to eq(board.squares[2][2])
         end
       end
 
-      context 'when the other square is an unplayed letter' do
+      context 'when the selected square is an unplayed letter and the new square is empty' do
         before do
           subject.board_presenter.place_letter([1, 1], 'Z')
           subject.placed_letters << PlacedLetter.new([1, 1], 'Z')
@@ -96,6 +96,29 @@ describe GamePresenter do
         end
 
         it 'moves the letter on the board for the new position' do
+          expect(board_presenter.square_presenters_for([2,2]).letter).to eq('Z')
+        end
+      end
+
+      context 'when the selected square is an unplayed letter and the new square is an unplayed letter' do
+        before do
+          subject.board_presenter.place_letter([1, 1], 'Z')
+          subject.placed_letters << PlacedLetter.new([1, 1], 'Z')
+          subject.board_presenter.place_letter([2, 2], 'Y')
+          subject.placed_letters << PlacedLetter.new([2, 2], 'Y')
+          subject.board_square_selected([2, 2])
+        end
+
+        it 'unselects the square on the board' do
+          expect(board_presenter.selected_square).to be_nil
+        end
+
+        it 'updates the position of the placed letters so that they are swapped' do
+          expect(subject.placed_letters).to match_array([PlacedLetter.new([2, 2], 'Z'), PlacedLetter.new([1, 1], 'Y')])
+        end
+
+        it 'swaps the positions of the letters' do
+          expect(board_presenter.square_presenters_for([1,1]).letter).to eq('Y')
           expect(board_presenter.square_presenters_for([2,2]).letter).to eq('Z')
         end
       end

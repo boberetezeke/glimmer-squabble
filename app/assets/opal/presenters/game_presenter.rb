@@ -56,15 +56,32 @@ class GamePresenter
 
       tray_presenter.select_square(nil)
       board_presenter.select_square(nil)
-    elsif board_presenter.selected_square&.has_unplayed_letter?
+    elsif board_presenter.selected_square
       old_position = board_presenter.selected_position
-      square_presenter = board_presenter.square_presenters_for(old_position)
-      letter = square_presenter.letter
-      @placed_letters = @placed_letters.reject { |placed_letter| placed_letter.position == old_position }
-      @placed_letters << PlacedLetter.new(board_position, letter)
-      board_presenter.place_letter(old_position, nil)
-      board_presenter.place_letter(board_position, letter)
-      board_presenter.select_square(nil)
+      if old_position == board_position
+        board_presenter.select_square(nil)
+      else
+        if board_presenter.selected_square.has_unplayed_letter?
+          old_square_presenter = board_presenter.square_presenters_for(old_position)
+          old_letter = old_square_presenter.letter
+          letter = board_presenter.square_presenters_for(board_position).letter
+          if square_presenter.has_unplayed_letter?
+            @placed_letters = @placed_letters.reject { |placed_letter| placed_letter.position == old_position || placed_letter.position == board_position }
+            @placed_letters << PlacedLetter.new(old_position, letter)
+            @placed_letters << PlacedLetter.new(board_position, old_letter)
+            board_presenter.place_letter(old_position, letter)
+            board_presenter.place_letter(board_position, old_letter)
+          else
+            @placed_letters = @placed_letters.reject { |placed_letter| placed_letter.position == old_position }
+            @placed_letters << PlacedLetter.new(board_position, old_letter)
+            board_presenter.place_letter(old_position, nil)
+            board_presenter.place_letter(board_position, old_letter)
+          end
+          board_presenter.select_square(nil)
+        else
+          board_presenter.select_square(board_position)
+        end
+      end
     else
       board_presenter.select_square(board_position)
     end
