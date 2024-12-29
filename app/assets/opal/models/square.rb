@@ -7,4 +7,16 @@ class Square
     @is_played = is_played
     @letter = letter
   end
+
+  def empty?
+    @letter.nil?
+  end
+
+  def has_unplayed_letter?
+    @letter && !@is_played
+  end
+
+  def replaceable?
+    has_unplayed_letter?
+  end
 end

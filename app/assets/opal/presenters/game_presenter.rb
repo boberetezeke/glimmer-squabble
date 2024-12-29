@@ -40,14 +40,31 @@ class GamePresenter
 
   def board_square_selected(board_position)
     puts "game_presenter#board_square_selected(#{board_position})"
+    square_presenter = board_presenter.square_presenters_for(board_position)
     if tray_presenter.selected_square
       letter = tray_presenter.selected_square.letter
       return unless letter
 
-      tray_presenter.place_letter(tray_presenter.selected_position, nil)
+      if square_presenter.empty?
+        tray_presenter.place_letter(tray_presenter.selected_position, nil)
+      elsif square_presenter.replaceable?
+        tray_presenter.place_letter(tray_presenter.selected_position, square_presenter.letter)
+        @placed_letters = @placed_letters.reject { |placed_letter| placed_letter.position == board_position }
+      end
       board_presenter.place_letter(board_position, letter)
       @placed_letters << PlacedLetter.new(board_position, letter)
+
       tray_presenter.select_square(nil)
+      board_presenter.select_square(nil)
+    elsif board_presenter.selected_square&.has_unplayed_letter?
+      old_position = board_presenter.selected_position
+      square_presenter = board_presenter.square_presenters_for(old_position)
+      letter = square_presenter.letter
+      @placed_letters = @placed_letters.reject { |placed_letter| placed_letter.position == old_position }
+      @placed_letters << PlacedLetter.new(board_position, letter)
+      board_presenter.place_letter(old_position, nil)
+      board_presenter.place_letter(board_position, letter)
+      board_presenter.select_square(nil)
     else
       board_presenter.select_square(board_position)
     end

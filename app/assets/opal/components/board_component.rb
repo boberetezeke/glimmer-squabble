@@ -4,7 +4,7 @@ class BoardComponent
   option :board_presenter
 
   markup do
-    table do
+    table(class: 'board') do
       board_presenter.size.times do |row_index|
         tr do
           board_presenter.size.times do |col_index|

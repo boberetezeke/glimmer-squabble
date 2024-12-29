@@ -66,39 +66,96 @@ describe GamePresenter do
 
     context 'when a different square is selected on the board' do
       before do
-        subject.board_square_selected([1, 1])
+        subject.board_presenter.select_square([1, 1])
       end
 
-      it 'marks the square as selected on the board' do
-        subject.board_square_selected([2, 2])
-        expect(board_presenter.selected_square).to eq(board.squares[2][2])
+      context 'when the other square is empty' do
+        it 'marks the square as selected on the board' do
+          subject.board_square_selected([2, 2])
+          expect(board_presenter.selected_square).to eq(board.squares[2][2])
+        end
+      end
+
+      context 'when the other square is an unplayed letter' do
+        before do
+          subject.board_presenter.place_letter([1, 1], 'Z')
+          subject.placed_letters << PlacedLetter.new([1, 1], 'Z')
+          subject.board_square_selected([2, 2])
+        end
+
+        it 'unselects the square on the board' do
+          expect(board_presenter.selected_square).to be_nil
+        end
+
+        it 'updates the position of the placed letter' do
+          expect(subject.placed_letters).to eq([PlacedLetter.new([2, 2], 'Z')])
+        end
+
+        it 'clears the letter on the board for the old position' do
+          expect(board_presenter.square_presenters_for([1,1]).raw_letter).to be_nil
+        end
+
+        it 'moves the letter on the board for the new position' do
+          expect(board_presenter.square_presenters_for([2,2]).letter).to eq('Z')
+        end
       end
     end
 
     context 'when a square is selected on the tray' do
-      before do
-        tray_presenter.select_square(1)
-        subject.board_square_selected([1, 1])
+      context 'when the square is empty' do
+        before do
+          tray_presenter.select_square(1)
+          subject.board_square_selected([1, 1])
+        end
+
+        it 'unselects the square on the layer' do
+          expect(tray_presenter.selected_square).to be_nil
+        end
+
+        it 'unselects the square on the board' do
+          expect(board_presenter.selected_square).to be_nil
+        end
+
+        it 'places the letter on the board' do
+          expect(board.squares[1][1].letter).to eq('B')
+        end
+
+        it 'adds to the played letters' do
+          expect(subject.placed_letters).to eq([PlacedLetter.new([1, 1], 'B')])
+        end
+
+        it 'clears the letter on the tray' do
+          expect(tray.squares[1].letter).to be_nil
+        end
       end
 
-      it 'unselects the square on the layer' do
-        expect(tray_presenter.selected_square).to be_nil
-      end
+      context 'when the square is an unplayed letter' do
+        before do
+          board.squares[1][1].letter = 'Z'
+          subject.placed_letters << PlacedLetter.new([1, 1], 'Z')
+          tray_presenter.select_square(1)
+          subject.board_square_selected([1, 1])
+        end
 
-      it 'unselects the square on the board' do
-        expect(board_presenter.selected_square).to be_nil
-      end
+        it 'unselects the square on the layer' do
+          expect(tray_presenter.selected_square).to be_nil
+        end
 
-      it 'places the letter on the board' do
-        expect(board.squares[1][1].letter).to eq('B')
-      end
+        it 'unselects the square on the board' do
+          expect(board_presenter.selected_square).to be_nil
+        end
 
-      it 'adds to the played letters' do
-        expect(subject.placed_letters).to eq([PlacedLetter.new([1, 1], 'B')])
-      end
+        it 'places the letter on the board' do
+          expect(board.squares[1][1].letter).to eq('B')
+        end
 
-      it 'clears the letter on the tray' do
-        expect(tray.squares[1].letter).to be_nil
+        it 'adds to the played letters' do
+          expect(subject.placed_letters).to eq([PlacedLetter.new([1, 1], 'B')])
+        end
+
+        it 'replaces letter on the tray with the letter on the board' do
+          expect(tray.squares[1].letter).to eq('Z')
+        end
       end
     end
   end

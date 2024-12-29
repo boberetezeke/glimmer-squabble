@@ -14,6 +14,7 @@
  *= require_self
  */
 
-.square_played { color: lightgray; background-color: white; }
+.square_played { color: gray; background-color: white; }
 .square_selected { color: white; background-color: red; }
-.square { font-size: 16pt; border: 1px solid gray; }
+.tray .square { font-size: 48pt; border: 1px solid gray; }
+.board .square { font-size: 20pt; border: 1px solid gray; }
