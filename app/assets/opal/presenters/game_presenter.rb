@@ -48,7 +48,7 @@ class GamePresenter
       if old_position == board_position
         bs_selected_with_bs_selected
       else
-        bs_selected_with_bs_unselected(board_position, square_presenter, old_position)
+        bs_selected_with_everything_unselected(board_position, square_presenter, old_position)
       end
     else
       board_presenter.select_square(board_position)
@@ -74,7 +74,7 @@ class GamePresenter
     unselect_board_square
   end
 
-  def bs_selected_with_bs_unselected(board_position, board_square_presenter, old_board_position)
+  def bs_selected_with_everything_unselected(board_position, board_square_presenter, old_board_position)
     if board_presenter.selected_square.has_unplayed_letter?
       old_board_square_presenter = board_presenter.square_presenters_for(old_board_position)
       old_board_letter = old_board_square_presenter.letter
