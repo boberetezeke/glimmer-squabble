@@ -42,46 +42,49 @@ class GamePresenter
     puts "game_presenter#board_square_selected(#{board_position})"
     square_presenter = board_presenter.square_presenters_for(board_position)
     if tray_presenter.selected_square
-      letter = tray_presenter.selected_square.letter
-      return unless letter
-
-      if square_presenter.empty?
-        tray_presenter.place_letter(tray_presenter.selected_position, nil)
-      elsif square_presenter.replaceable?
-        tray_presenter.place_letter(tray_presenter.selected_position, square_presenter.letter)
-        @placed_letters = @placed_letters.reject { |placed_letter| placed_letter.position == board_position }
-      end
-      board_presenter.place_letter(board_position, letter)
-      @placed_letters << PlacedLetter.new(board_position, letter)
-
-      tray_presenter.select_square(nil)
-      board_presenter.select_square(nil)
+      bs_selected_with_ts_selected(board_position, square_presenter)
     elsif board_presenter.selected_square
       old_position = board_presenter.selected_position
       if old_position == board_position
-        board_presenter.select_square(nil)
+        bs_selected_with_bs_selected
       else
-        if board_presenter.selected_square.has_unplayed_letter?
-          old_square_presenter = board_presenter.square_presenters_for(old_position)
-          old_letter = old_square_presenter.letter
-          letter = board_presenter.square_presenters_for(board_position).letter
-          if square_presenter.has_unplayed_letter?
-            @placed_letters = @placed_letters.reject { |placed_letter| placed_letter.position == old_position || placed_letter.position == board_position }
-            @placed_letters << PlacedLetter.new(old_position, letter)
-            @placed_letters << PlacedLetter.new(board_position, old_letter)
-            board_presenter.place_letter(old_position, letter)
-            board_presenter.place_letter(board_position, old_letter)
-          else
-            @placed_letters = @placed_letters.reject { |placed_letter| placed_letter.position == old_position }
-            @placed_letters << PlacedLetter.new(board_position, old_letter)
-            board_presenter.place_letter(old_position, nil)
-            board_presenter.place_letter(board_position, old_letter)
-          end
-          board_presenter.select_square(nil)
-        else
-          board_presenter.select_square(board_position)
-        end
+        bs_selected_with_bs_unselected(board_position, square_presenter, old_position)
       end
+    else
+      board_presenter.select_square(board_position)
+    end
+  end
+
+  def bs_selected_with_ts_selected(board_position, board_square_presenter)
+    tray_letter = tray_presenter.selected_square.letter
+    return unless tray_letter
+
+    if board_square_presenter.empty?
+      clear_tray_letter
+    elsif board_square_presenter.replaceable?
+      move_board_letter_to_tray(board_position, board_square_presenter)
+    end
+    place_letter_on_board(board_position, tray_letter)
+
+    unselect_tray_square
+    unselect_board_square
+  end
+
+  def bs_selected_with_bs_selected
+    unselect_board_square
+  end
+
+  def bs_selected_with_bs_unselected(board_position, board_square_presenter, old_board_position)
+    if board_presenter.selected_square.has_unplayed_letter?
+      old_board_square_presenter = board_presenter.square_presenters_for(old_board_position)
+      old_board_letter = old_board_square_presenter.letter
+      board_letter = board_presenter.square_presenters_for(board_position).letter
+      if board_square_presenter.has_unplayed_letter?
+        swap_board_letters(board_position, old_board_position, board_letter, old_board_letter)
+      else
+        move_board_letter(board_position, old_board_position, old_board_letter)
+      end
+      board_presenter.select_square(nil)
     else
       board_presenter.select_square(board_position)
     end
@@ -90,12 +93,12 @@ class GamePresenter
   def tray_square_selected(tray_position)
     puts "game_presenter#tray_square_selected(#{tray_position})"
     if board_presenter.selected_square
-      letter = board_presenter.selected_square.letter
-      return unless letter
+      board_letter = board_presenter.selected_square.letter
+      return unless board_letter
 
       board_presenter.place_letter(board_presenter.selected_position, nil)
-      tray_presenter.place_letter(tray_position, letter)
-      board_presenter.select_square(nil)
+      tray_presenter.place_letter(tray_position, board_letter)
+      unselect_board_square
     else
       tray_presenter.select_square(tray_position)
     end
@@ -148,6 +151,8 @@ class GamePresenter
     @player_presenters[@game.current_player_index]
   end
 
+  private
+
   def go_to_next_player(move_to_next_player: true)
     @tray_presenter.remove_player_letters(current_player)
     return unless move_to_next_player
@@ -155,4 +160,42 @@ class GamePresenter
     @game.next_player
     @tray_presenter.add_player_letters(current_player)
   end
+
+  def unselect_board_square
+    board_presenter.select_square(nil)
+  end
+
+  def unselect_tray_square
+    tray_presenter.select_square(nil)
+  end
+
+  def clear_tray_letter
+    tray_presenter.place_letter(tray_presenter.selected_position, nil)
+  end
+
+  def move_board_letter_to_tray(board_position, square_presenter)
+    tray_presenter.place_letter(tray_presenter.selected_position, square_presenter.letter)
+    @placed_letters = @placed_letters.reject { |placed_letter| placed_letter.position == board_position }
+  end
+
+  def place_letter_on_board(board_position, letter)
+    board_presenter.place_letter(board_position, letter)
+    @placed_letters << PlacedLetter.new(board_position, letter)
+  end
+
+  def swap_board_letters(board_position, old_position, letter, old_letter)
+    @placed_letters = @placed_letters.reject { |placed_letter| placed_letter.position == old_position || placed_letter.position == board_position }
+    @placed_letters << PlacedLetter.new(old_position, letter)
+    @placed_letters << PlacedLetter.new(board_position, old_letter)
+    board_presenter.place_letter(old_position, letter)
+    board_presenter.place_letter(board_position, old_letter)
+  end
+
+  def move_board_letter(board_position, old_position, old_letter)
+    @placed_letters = @placed_letters.reject { |placed_letter| placed_letter.position == old_position }
+    @placed_letters << PlacedLetter.new(board_position, old_letter)
+    board_presenter.place_letter(old_position, nil)
+    board_presenter.place_letter(board_position, old_letter)
+  end
+
 end

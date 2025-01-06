@@ -1,24 +1,13 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This is a clone of a popular word game using a library called glimmer-web-dsl which uses Opal (a javascript ruby implementation).
 
-Things you may want to cover:
+## Todo
 
-* Ruby version
+* [ ] variable letter scoring
+* [ ] blank tiles
+* [ ] special squares
+* [ ] add pass and play
+* [ ] add login for remote play
+* [ ] add email notifications
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
