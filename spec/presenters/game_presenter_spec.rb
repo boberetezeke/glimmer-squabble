@@ -259,7 +259,7 @@ describe GamePresenter do
       end
 
       it 'adds to the players score' do
-        expect(player_1.score).to eq(1)
+        expect(player_1.score).to eq(3)
       end
 
       context 'when returns before go to next player' do
@@ -288,7 +288,7 @@ describe GamePresenter do
         end
 
         it 'adds to the players score' do
-          expect(player_1.score).to eq(1)
+          expect(player_1.score).to eq(3)
         end
       end
     end

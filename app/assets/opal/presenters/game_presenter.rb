@@ -114,7 +114,7 @@ class GamePresenter
     @placed_letters.each do |placed_letter|
       puts "placing #{placed_letter}"
       board_presenter.square_presenters_for(placed_letter.position).is_played = true
-      score += 1
+      score += score_for_placed_letters
     end
 
     current_player_presenter.score = score
@@ -152,6 +152,10 @@ class GamePresenter
   end
 
   private
+
+  def score_for_placed_letters
+    @placed_letters.map { |placed_letter| board_presenter.square_presenters_for(placed_letter.position).score }.sum
+  end
 
   def go_to_next_player(move_to_next_player: true)
     @tray_presenter.remove_player_letters(current_player)
