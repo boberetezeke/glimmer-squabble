@@ -110,11 +110,10 @@ class GamePresenter
 
     drawn_letters = bag_presenter.draw(@placed_letters.size)
 
-    score = current_player_presenter.score
+    score = current_player_presenter.score + placed_letters_total
     @placed_letters.each do |placed_letter|
       puts "placing #{placed_letter}"
       board_presenter.square_presenters_for(placed_letter.position).is_played = true
-      score += score_for_placed_letters
     end
 
     current_player_presenter.score = score
@@ -153,8 +152,27 @@ class GamePresenter
 
   private
 
-  def score_for_placed_letters
-    @placed_letters.map { |placed_letter| board_presenter.square_presenters_for(placed_letter.position).score }.sum
+  def placed_letters_total
+    word_modifiers(@placed_letters).inject(placed_letters_subtotal(@placed_letters)) do |product, modifier|
+      modifier.modify_score(product)
+    end
+  end
+
+  def placed_letters_subtotal(placed_letters)
+    placed_letters.sum do |placed_letter|
+      square_presenter = board_presenter.square_presenters_for(placed_letter.position)
+      modifier = square_presenter.modifier
+      score = square_presenter.value
+      score = modifier.modify_score(score) if modifier&.for_letter?
+      score
+    end
+  end
+
+  def word_modifiers(placed_letters)
+    placed_letters.filter_map do |placed_letter|
+      square_presenter = board_presenter.square_presenters_for(placed_letter.position)
+      square_presenter.modifier && square_presenter.modifier.for_word? ? square_presenter.modifier : nil
+    end
   end
 
   def go_to_next_player(move_to_next_player: true)
@@ -201,5 +219,4 @@ class GamePresenter
     board_presenter.place_letter(old_position, nil)
     board_presenter.place_letter(board_position, old_letter)
   end
-
 end

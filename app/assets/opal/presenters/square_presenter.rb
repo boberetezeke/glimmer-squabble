@@ -7,7 +7,8 @@ class SquarePresenter
   def_delegator :@square, :is_played
   def_delegator :@square, :is_played=
   def_delegator :@square, :empty?
-  def_delegator :@square, :score
+  def_delegator :@square, :value
+  def_delegator :@square, :modifier
   def_delegator :@square, :has_unplayed_letter?
   def_delegator :@square, :replaceable?
 

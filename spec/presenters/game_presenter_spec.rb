@@ -235,31 +235,45 @@ describe GamePresenter do
       before do
         subject.tray_square_selected(2)
         subject.board_square_selected([1, 1])
+        subject.tray_square_selected(0)
+        subject.board_square_selected([1, 2])
+        board.squares[1][1].modifier = SquareModifier.new(SquareModifier::DOUBLE_LETTER)
+        board.squares[1][2].modifier = SquareModifier.new(SquareModifier::DOUBLE_WORD)
         subject.play_pressed(return_before: return_before)
       end
 
-      it 'places the letter' do
+      it 'places the letters' do
         expect(board.squares[1][1].letter).to eq('C')
+        expect(board.squares[1][2].letter).to eq('A')
       end
 
-      it 'marks it as played' do
+      it 'marks them as played' do
         expect(board.squares[1][1].is_played).to be_truthy
+        expect(board.squares[1][2].is_played).to be_truthy
       end
 
       it 'saves the play in the play history' do
-        expect(subject.play_history).to eq([PlayedWord.new(player_1, [PlacedLetter.new([1, 1], 'C')])])
+        expect(subject.play_history).to eq(
+          [
+            PlayedWord.new(player_1, [
+                PlacedLetter.new([1, 1], 'C'),
+                PlacedLetter.new([1, 2], 'A'),
+              ]
+            )
+          ]
+        )
       end
 
       it 'clears the placed letters' do
         expect(subject.placed_letters).to be_empty
       end
 
-      it 'takes a letter out of the bag' do
-        expect(bag.letters.size).to eq(6)
+      it 'takes the letters out of the bag' do
+        expect(bag.letters.size).to eq(5)
       end
 
       it 'adds to the players score' do
-        expect(player_1.score).to eq(3)
+        expect(player_1.score).to eq(((3*2) + 1) * 2)
       end
 
       context 'when returns before go to next player' do
@@ -288,7 +302,7 @@ describe GamePresenter do
         end
 
         it 'adds to the players score' do
-          expect(player_1.score).to eq(3)
+          expect(player_1.score).to eq(((3*2) + 1) * 2)
         end
       end
     end
