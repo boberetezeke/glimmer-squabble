@@ -4,8 +4,8 @@ This is a clone of a popular word game using a library called glimmer-web-dsl wh
 
 ## Todo
 
-* [ ] variable letter scoring
-* [ ] special squares
+* [x] variable letter scoring
+* [x] special squares
 * [ ] validate letters played in a row
 * [ ] blank tiles
 * [ ] add pass and play

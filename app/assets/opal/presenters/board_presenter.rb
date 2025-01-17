@@ -66,6 +66,11 @@ class BoardPresenter
     @square_presenters[row][col]
   end
 
+  def start_square_presenter
+    position = @board.start_square_position
+    position.nil? ? nil : square_presenters_for(position)
+  end
+
   def place_letter(position, letter)
     row, col = position
     puts "board_presenter#place_letter(#{row},#{col},#{letter})"

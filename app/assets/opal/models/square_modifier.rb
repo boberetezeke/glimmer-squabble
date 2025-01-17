@@ -14,6 +14,10 @@ class SquareModifier
     @modifier = modifier
   end
 
+  def start_square?
+    @modifier == START_SQUARE
+  end
+
   def for_letter?
     LETTER_MODIFIERS.include?(@modifier)
   end

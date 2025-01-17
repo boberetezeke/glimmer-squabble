@@ -4,6 +4,7 @@ class SquarePresenter
   extend Forwardable
 
   attr_accessor :is_selected
+  def_delegator :@square, :position
   def_delegator :@square, :is_played
   def_delegator :@square, :is_played=
   def_delegator :@square, :empty?

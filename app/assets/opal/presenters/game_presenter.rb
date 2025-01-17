@@ -104,9 +104,72 @@ class GamePresenter
     end
   end
 
+  def play_invalid_reason
+    return :not_covering_start_square unless start_square_covered?
+    return :not_adjacent_to_played_letter unless adjacent_to_any_played_letter?(placed_letters)
+    return :placed_letters_not_in_a_line unless placed_letters_all_in_a_line?(placed_letters)
+    return :placed_letters_not_connected unless placed_letters_all_connected?(placed_letters)
+    return nil
+  end
+
+  def placed_letters_all_connected?(placed_letters)
+    position_index = placed_letters_all_in_a_row?(placed_letters) ? 0 : 1
+    other_position_index = 1 - position_index
+    sorted_letters = placed_letters.sort_by { |placed_letter| placed_letter.position[position_index] }
+    start_position = sorted_letters.first.position
+    position_range = (sorted_letters.first.position[other_position_index])..(sorted_letters.last.position[other_position_index])
+    if position_index == 0
+      positions = position_range.map{|col| [start_position[0], col] }
+    else
+      positions = position_range.map{|row| [row, start_position[1]] }
+    end
+    positions.all? { |position| @board_presenter.square_presenters_for(position).raw_letter }
+  end
+
+  def placed_letters_all_in_a_line?(placed_letters)
+    placed_letters_in_a_line?(placed_letters)
+  end
+
+  def placed_letters_in_a_line?(placed_letters)
+    placed_letters_all_in_a_row?(placed_letters) || placed_letters_all_in_a_col?(placed_letters)
+  end
+
+  def placed_letters_all_in_a_row?(placed_letters)
+    row = placed_letters[0].position[0]
+    placed_letters.all? { |placed_letter| placed_letter.position[0] == row }
+  end
+
+  def placed_letters_all_in_a_col?(placed_letters)
+    col = placed_letters[0].position[1]
+    placed_letters.all? { |placed_letter| placed_letter.position[1] == col }
+  end
+
+  def adjacent_to_any_played_letter?(placed_letters)
+    placed_letters.any? do |placed_letter|
+      adjacent_to_played_letter?(placed_letter) || on_start_square?(placed_letter)
+    end
+  end
+
+  def on_start_square?(placed_letter)
+    board_presenter.start_square_presenter.position == placed_letter.position
+  end
+
+  def adjacent_to_played_letter?(placed_letter)
+    placed_letter.adjacent_positions(@board_presenter.size).any? do |adjacent_position|
+      @board_presenter.square_presenters_for(adjacent_position).is_played
+    end
+  end
+
+  def start_square_covered?
+    !(board_presenter.start_square_presenter&.raw_letter.nil?)
+  end
+
   def play_pressed(return_before: :nothing)
     puts "game_presenter#play_pressed #{@placed_letters}"
-    return unless @placed_letters.any?
+    return :no_letters_placed unless @placed_letters.any?
+
+    invalid_reason = play_invalid_reason
+    return invalid_reason unless invalid_reason.nil?
 
     drawn_letters = bag_presenter.draw(@placed_letters.size)
 
@@ -128,9 +191,11 @@ class GamePresenter
       end
     end
 
-    return if return_before == :go_to_next_player
+    return nil if return_before == :go_to_next_player
 
     go_to_next_player(move_to_next_player: return_before != :place_next_player_letters)
+
+    nil
   end
 
   def pass_pressed

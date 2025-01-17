@@ -6,7 +6,7 @@ describe GamePresenter do
   let(:board_presenter) { subject.board_presenter }
   let(:game) { Game.new(board, bag, tray, [player_1, player_2]) }
   let(:bag) { Bag.new('MNOPQRS') }
-  let(:board) { Board.new(3) }
+  let(:board) { Board.new(5) }
   let(:tray) { Tray.new(7, ['A', 'B', 'C', 'D']) }
   let(:player_1) { Player.new('player_1', letters: ['A', 'B', 'C', 'D']) }
   let(:player_2) { Player.new('player_2', letters: ['M', 'N', 'O', 'P']) }
@@ -229,80 +229,148 @@ describe GamePresenter do
       end
     end
 
+    describe '#play_invalid_reason' do
+      context 'when the letters placed dont touch the start square' do
+        it 'returns invalid' do
+          board.squares[2][0].modifier = SquareModifier.new(SquareModifier::START_SQUARE)
+          subject.tray_square_selected(2)
+          subject.board_square_selected([1, 1])
+          subject.tray_square_selected(0)
+          subject.board_square_selected([1, 2])
+          expect(subject.play_invalid_reason).to eq(:not_covering_start_square)
+        end
+
+        context 'when the letters placed dont touch any played letters' do
+          it 'returns invalid' do
+            board.squares[2][0].modifier = SquareModifier.new(SquareModifier::START_SQUARE)
+            board.squares[2][0].letter = 'Z'
+            board.squares[2][0].is_played = true
+
+            subject.tray_square_selected(2)
+            subject.board_square_selected([1, 1])
+            subject.tray_square_selected(0)
+            subject.board_square_selected([1, 2])
+            expect(subject.play_invalid_reason).to eq(:not_adjacent_to_played_letter)
+          end
+        end
+
+        context 'when the letters placed arent in a row or column' do
+          it 'returns invalid' do
+            board.squares[1][1].modifier = SquareModifier.new(SquareModifier::START_SQUARE)
+
+            subject.tray_square_selected(2)
+            subject.board_square_selected([1, 1])
+            subject.tray_square_selected(0)
+            subject.board_square_selected([2, 2])
+            expect(subject.play_invalid_reason).to eq(:placed_letters_not_in_a_line)
+          end
+        end
+
+        context 'when the letters arent connected together to played letters' do
+          it 'returns invalid' do
+            board.squares[2][2].modifier = SquareModifier.new(SquareModifier::START_SQUARE)
+            board.squares[2][2].letter = 'Z'
+            board.squares[2][2].is_played = true
+
+            subject.tray_square_selected(1)
+            subject.board_square_selected([2, 1])
+            subject.tray_square_selected(2)
+            subject.board_square_selected([2, 4])
+            expect(subject.play_invalid_reason).to eq(:placed_letters_not_connected)
+          end
+        end
+      end
+    end
+
     describe '#play_pressed' do
       let(:return_before) { :nothing }
 
-      before do
-        subject.tray_square_selected(2)
-        subject.board_square_selected([1, 1])
-        subject.tray_square_selected(0)
-        subject.board_square_selected([1, 2])
-        board.squares[1][1].modifier = SquareModifier.new(SquareModifier::DOUBLE_LETTER)
-        board.squares[1][2].modifier = SquareModifier.new(SquareModifier::DOUBLE_WORD)
-        subject.play_pressed(return_before: return_before)
-      end
-
-      it 'places the letters' do
-        expect(board.squares[1][1].letter).to eq('C')
-        expect(board.squares[1][2].letter).to eq('A')
-      end
-
-      it 'marks them as played' do
-        expect(board.squares[1][1].is_played).to be_truthy
-        expect(board.squares[1][2].is_played).to be_truthy
-      end
-
-      it 'saves the play in the play history' do
-        expect(subject.play_history).to eq(
-          [
-            PlayedWord.new(player_1, [
-                PlacedLetter.new([1, 1], 'C'),
-                PlacedLetter.new([1, 2], 'A'),
-              ]
-            )
-          ]
-        )
-      end
-
-      it 'clears the placed letters' do
-        expect(subject.placed_letters).to be_empty
-      end
-
-      it 'takes the letters out of the bag' do
-        expect(bag.letters.size).to eq(5)
-      end
-
-      it 'adds to the players score' do
-        expect(player_1.score).to eq(((3*2) + 1) * 2)
-      end
-
-      context 'when returns before go to next player' do
-        let(:return_before) { :go_to_next_player }
-
-        it 'replaces the played letter with a letter from the bag' do
-          expect(tray.squares[2].letter).not_to be_nil
+      context 'when the play is invalid' do
+        context 'when the letters placed dont touch the start square' do
+          it 'returns invalid' do
+            board.squares[0][0].modifier = SquareModifier.new(SquareModifier::START_SQUARE)
+            subject.tray_square_selected(2)
+            subject.board_square_selected([1, 1])
+            subject.tray_square_selected(0)
+            subject.board_square_selected([1, 2])
+            expect(subject.play_pressed(return_before: return_before)).to eq(:not_covering_start_square)
+          end
         end
       end
 
-      context 'when returns before we place next players letters' do
-        let(:return_before) { :place_next_player_letters }
-
-        it 'clears out the tray' do
-          expect(tray.squares.map(&:letter)).to eq([nil, nil, nil, nil, nil, nil, nil])
-        end
-      end
-
-      context 'when play advances to the next player' do
-        it 'advances the player' do
-          expect(subject.current_player_presenter).to eq(player_2_presenter)
+      context 'when it is a valid play' do
+        before do
+          subject.tray_square_selected(2)
+          subject.board_square_selected([1, 1])
+          subject.tray_square_selected(0)
+          subject.board_square_selected([1, 2])
+          board.squares[1][1].modifier = SquareModifier.new(SquareModifier::DOUBLE_LETTER)
+          board.squares[1][2].modifier = SquareModifier.new(SquareModifier::START_SQUARE)
+          subject.play_pressed(return_before: return_before)
         end
 
-        it 'replaces the letters on the tray with the next players letters' do
-          expect(tray.squares.map(&:letter)).to eq(['M', 'N', 'O', 'P', nil, nil, nil])
+        it 'places the letters' do
+          expect(board.squares[1][1].letter).to eq('C')
+          expect(board.squares[1][2].letter).to eq('A')
+        end
+
+        it 'marks them as played' do
+          expect(board.squares[1][1].is_played).to be_truthy
+          expect(board.squares[1][2].is_played).to be_truthy
+        end
+
+        it 'saves the play in the play history' do
+          expect(subject.play_history).to eq(
+            [
+              PlayedWord.new(player_1, [
+                  PlacedLetter.new([1, 1], 'C'),
+                  PlacedLetter.new([1, 2], 'A'),
+                ]
+              )
+            ]
+          )
+        end
+
+        it 'clears the placed letters' do
+          expect(subject.placed_letters).to be_empty
+        end
+
+        it 'takes the letters out of the bag' do
+          expect(bag.letters.size).to eq(5)
         end
 
         it 'adds to the players score' do
           expect(player_1.score).to eq(((3*2) + 1) * 2)
+        end
+
+        context 'when returns before go to next player' do
+          let(:return_before) { :go_to_next_player }
+
+          it 'replaces the played letter with a letter from the bag' do
+            expect(tray.squares[2].letter).not_to be_nil
+          end
+        end
+
+        context 'when returns before we place next players letters' do
+          let(:return_before) { :place_next_player_letters }
+
+          it 'clears out the tray' do
+            expect(tray.squares.map(&:letter)).to eq([nil, nil, nil, nil, nil, nil, nil])
+          end
+        end
+
+        context 'when play advances to the next player' do
+          it 'advances the player' do
+            expect(subject.current_player_presenter).to eq(player_2_presenter)
+          end
+
+          it 'replaces the letters on the tray with the next players letters' do
+            expect(tray.squares.map(&:letter)).to eq(['M', 'N', 'O', 'P', nil, nil, nil])
+          end
+
+          it 'adds to the players score' do
+            expect(player_1.score).to eq(((3*2) + 1) * 2)
+          end
         end
       end
     end
