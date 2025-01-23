@@ -19,6 +19,7 @@ require 'models/square'
 require 'models/tray'
 require 'models/placed_letter'
 require 'models/played_word'
+require 'models/square_modifier'
 
 require 'presenters/game_presenter'
 require 'presenters/board_presenter'

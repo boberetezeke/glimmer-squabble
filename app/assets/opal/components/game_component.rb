@@ -20,6 +20,12 @@ class GameComponent
       action_component action_presenter: game_presenter.action_presenter
     end
     div do
+      'Invalid Reason'
+    end
+    div do
+      inner_text <= [game_presenter, :invalid_reason_text]
+    end
+    div do
       bag_component bag_presenter: game_presenter.bag_presenter
     end
   end

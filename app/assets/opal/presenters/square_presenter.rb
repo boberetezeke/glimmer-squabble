@@ -14,6 +14,9 @@ class SquarePresenter
   def_delegator :@square, :replaceable?
 
   attr_reader :square
+  attr_accessor :is_start_square
+  attr_accessor :is_double_word
+  attr_accessor :is_triple_word
 
   def initialize(square)
     @square = square
@@ -42,6 +45,7 @@ class SquarePresenter
 
   def selected
     puts "square_presenter#selected:#{@square.position}"
+    puts "@on_select: #{@on_select.inspect}"
     @on_select.call(@square.position)
   end
 end

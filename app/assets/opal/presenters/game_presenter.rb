@@ -7,6 +7,7 @@ class GamePresenter
   def_delegator :@game, :players
   def_delegator :@game, :pass
 
+  attr_accessor :invalid_reason_text
   attr_reader :tray_presenter, :board_presenter, :player_presenters, :action_presenter, :bag_presenter
   attr_reader :placed_letters, :play_history
 
@@ -19,8 +20,10 @@ class GamePresenter
     @bag_presenter = BagPresenter.new(game.bag)
     @placed_letters = []
     @play_history = []
+    @invalid_reason_text = ''
 
     setup_on_selects
+    @board_presenter.set_styles
   end
 
   def setup_on_selects
@@ -28,6 +31,7 @@ class GamePresenter
       tray_square_selected(position)
     end
     @board_presenter.on_select_square do |position|
+      puts "setup_on_selects: #{position}"
       board_square_selected(position)
     end
     @action_presenter.on_play_pressed do
@@ -53,6 +57,12 @@ class GamePresenter
     else
       board_presenter.select_square(board_position)
     end
+    update_invalid_reason_text
+  end
+
+  def update_invalid_reason_text
+    invalid_reason = play_invalid_reason
+    self.invalid_reason_text = invalid_reason.nil? ? '' : invalid_reason.to_s
   end
 
   def bs_selected_with_ts_selected(board_position, board_square_presenter)

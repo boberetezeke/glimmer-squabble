@@ -18,6 +18,14 @@ class SquareModifier
     @modifier == START_SQUARE
   end
 
+  def double_word?
+    @modifier == DOUBLE_WORD
+  end
+
+  def triple_word?
+    @modifier == TRIPLE_WORD
+  end
+
   def for_letter?
     LETTER_MODIFIERS.include?(@modifier)
   end

@@ -13,8 +13,26 @@ class BoardPresenter
     @square_presenters = Array.new(board.size) do |row|
       Array.new(board.size) do |col|
         sp = SquarePresenter.new(board.squares[row][col])
-        sp.on_select { |position| square_selected(position[:row], position[:col]) }
+        sp.on_select { |position|
+          puts "board_presenter#initialize: #{position}"
+          square_selected(position)
+        }
         sp
+      end
+    end
+  end
+
+  def set_styles
+    @square_presenters.each do |row|
+      row.each do |square_presenter|
+        modifier = square_presenter.modifier
+        if modifier&.start_square?
+          square_presenter.is_start_square = true
+        elsif modifier&.double_word?
+          square_presenter.is_double_word = true
+        elsif modifier&.triple_word?
+          square_presenter.is_triple_word = true
+        end
       end
     end
   end
@@ -23,9 +41,9 @@ class BoardPresenter
     @on_select_square = block
   end
 
-  def square_selected(row, col)
-    puts "board_presenter#square_selected(#{row},#{col})"
-    @on_select_square.call([row, col]) if @on_select_square
+  def square_selected(position)
+    puts "board_presenter#square_selected(#{position})"
+    @on_select_square.call(position) if @on_select_square
   end
 
   def select_square(board_position)

@@ -18,3 +18,6 @@
 .square_selected { color: white; background-color: red; }
 .tray .square { font-size: 48pt; border: 1px solid gray; }
 .board .square { font-size: 20pt; border: 1px solid gray; }
+.board .start_square { background-color: blue; }
+.board .double_word { background-color: orange; }
+.board .triple_word { background-color: indianred; }
