@@ -1,0 +1,1 @@
+../assets/opal/models/square_modifier.rb
